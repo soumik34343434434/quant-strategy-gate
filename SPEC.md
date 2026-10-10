@@ -166,7 +166,7 @@ If the core files fail validation, gates 1–12 are reported as `SKIPPED` and th
 - config version and file hashes, and checker source sha256
 - every gate's checks: measured value, comparator, threshold, pass, plus status and reason
 - if BLOCKED: failed gates ordered by miss, largest first. Miss = max over failed checks of `|measured − threshold| / |threshold|`. When the threshold is 0, the absolute gap is used instead; for |β| checks the gap is `|β| − limit`. Non-numeric failures rank first.
-- recomputed headline metrics, including `max_notional_to_capital` (largest position ÷ declared capital). This is informational: drawdown and returns only hold at that sizing.
+- recomputed headline metrics, including `max_position_to_equity` (largest position ÷ equity just before its entry). This is informational: drawdown and returns only hold at that sizing.
 - deployment limits
 
 Determinism: the same bundle with the same config gives identical output apart from `checked_at`.

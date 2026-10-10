@@ -153,7 +153,7 @@ A DEPLOYABLE verdict means the report survived these checks. It does not mean th
 |---|---|---|
 | Look-ahead, survivorship or bad data in the backtester | The checker recomputes the trades but can't know whether they were possible | Gate 11 (out-of-sample paper) is the only defense. Audit the backtester separately. |
 | Self-reported inputs | `n_trials`, `builder_id`, the sensitivity trade lists and the paper results are all claims | Keep the full research log. The risk officer should spot-check how the neighbors and paper results were produced. |
-| Sizing mismatch | Declaring more capital than you'll trade makes the drawdown look smaller | Deploy at the backtest's `max_notional_to_capital`. The verdict prints it. |
+| Sizing mismatch | Declaring more capital than you'll trade makes the drawdown look smaller | Deploy at the backtest's `max_position_to_equity`. The verdict prints it. |
 | Tail risk: short volatility, negative skew | Sharpe and profit factor look fine until the tail event | The kill switch at 10% drawdown, and small initial size. |
 | Leverage and liquidation | The backtest doesn't model margin calls | Account-level leverage cap. Don't deploy leveraged without modeling liquidation. |
 | Market impact at size | Slippage is a fixed rate here, but real impact grows with size | Start at ≤ 5% allocation. Re-test slippage before scaling. |

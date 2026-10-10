@@ -1,0 +1,6 @@
+{"at": "2026-10-10T12:53:25Z", "params": {"fast": 20, "slow": 100}, "strategy": "btc-ma-trend"}
+{"at": "2026-10-10T12:53:25Z", "params": {"fast": 15, "slow": 100}, "strategy": "btc-ma-trend"}
+{"at": "2026-10-10T12:53:25Z", "params": {"fast": 25, "slow": 100}, "strategy": "btc-ma-trend"}
+{"at": "2026-10-10T12:53:25Z", "params": {"fast": 20, "slow": 100}, "strategy": "btc-ma-trend"}
+{"at": "2026-10-10T12:53:25Z", "params": {"fast": 20, "slow": 80}, "strategy": "btc-ma-trend"}
+{"at": "2026-10-10T12:53:25Z", "params": {"fast": 20, "slow": 120}, "strategy": "btc-ma-trend"}

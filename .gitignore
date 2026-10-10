@@ -5,3 +5,5 @@ __pycache__/
 verdicts/
 deployments.json
 .DS_Store
+research/data/
+research/output/
