@@ -1,0 +1,33 @@
+name: strategy-gate
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+
+      - name: Install pinned dependencies
+        run: python -m pip install -r requirements.txt
+
+      - name: Canary suite (every canary must block, clean must pass)
+        run: python -I -m pytest
+
+      - name: Config registry is intact and append-only
+        run: python -I ci/check_registry.py "${{ github.event.pull_request.base.sha || github.event.before }}"
+
+      - name: Every changed strategy report must be DEPLOYABLE
+        run: python -I ci/check_changed_reports.py "${{ github.event.pull_request.base.sha || github.event.before }}"

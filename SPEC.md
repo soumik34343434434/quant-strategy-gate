@@ -117,7 +117,7 @@ If the core files fail validation, gates 1–12 are reported as `SKIPPED` and th
 | 5 | benchmark | total return > buy & hold return |
 | 6 | neutral_book | Applies when the trades contain both sides. \|β\| ≤ 0.2 net, on up days, and on down days, with at least 60 aligned observations in total and 20 per side. N/A when single-sided. |
 | 7 | risk_officer | see below |
-| 8 | stress | Σ net P&L with fees ×2 and slippage ×2 > 0 |
+| 8 | stress | net return (Σ net P&L / `initial_capital`) with fees ×2 and slippage ×2 > 0 |
 | 9 | plateau | see below |
 | 10 | recent | trades exiting in the 12 months up to `backtest_end` alone pass gate 3 and gate 5 |
 | 11 | forward | see below |
@@ -155,6 +155,7 @@ If the core files fail validation, gates 1–12 are reported as `SKIPPED` and th
 - Changing anything means running `new_config_version.py`, which takes the changes and a reason (required), writes `v<N+1>`, and appends a registry entry. Verdicts record the config version they ran under.
 - `gate_check.py` takes exactly one positional argument. There are no flags, no environment variables, no `--force` and no skip list. It re-executes itself under `python -I`, so `PYTHONPATH` and similar variables are ignored.
 - **Honest limit:** anyone with write access can edit the code. The protection outside the tool is `CODEOWNERS` on the checker and config, plus branch protection with CI required. The owner has to turn those on in GitHub.
+- **Interpreter control is out of scope.** Whoever controls the interpreter itself (a planted `sitecustomize`, a replaced `python` binary) controls the process. CI and deploy therefore invoke `python -I` explicitly.
 
 ## 7. Outputs
 
@@ -164,7 +165,8 @@ If the core files fail validation, gates 1–12 are reported as `SKIPPED` and th
 - bundle sha256 (over sorted `path\0sha256` lines) and per-file hashes
 - config version and file hashes, and checker source sha256
 - every gate's checks: measured value, comparator, threshold, pass, plus status and reason
-- if BLOCKED: failed gates ordered by miss, largest first. Miss = max over failed checks of `|measured − threshold| / max(|threshold|, 1e-9)`; non-numeric failures rank first.
+- if BLOCKED: failed gates ordered by miss, largest first. Miss = max over failed checks of `|measured − threshold| / |threshold|`. When the threshold is 0, the absolute gap is used instead; for |β| checks the gap is `|β| − limit`. Non-numeric failures rank first.
+- recomputed headline metrics, including `max_notional_to_capital` (largest position ÷ declared capital). This is informational: drawdown and returns only hold at that sizing.
 - deployment limits
 
 Determinism: the same bundle with the same config gives identical output apart from `checked_at`.

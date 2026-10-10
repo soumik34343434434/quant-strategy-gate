@@ -167,6 +167,9 @@ class Context:
             "net_pnl": float(self.nets.sum()),
             "n_trades": int(len(self.t)),
             "buy_and_hold": bh,
+            # Informational, not a gate: drawdown and returns only mean anything at this sizing.
+            "max_notional_to_capital": float((self.t["size"] * self.t["entry_price"]
+                                              * self.m["contract_multiplier"]).max() / self.cap),
         }
 
     def cost_per_side(self) -> float:

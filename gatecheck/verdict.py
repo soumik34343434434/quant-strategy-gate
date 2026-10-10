@@ -112,6 +112,11 @@ def render_md(v: Verdict) -> str:
         for i, f in enumerate(failed, 1):
             miss = "non-numeric (missing input or hard fail)" if f["miss"] is None else f"{f['miss']:.3g}"
             out.append(f"{i}. **{f['key']}** (gate {f['id']}, miss {miss}): {_md(f['reason'])}")
+    if v.metrics:
+        out += ["", "## Recomputed from raw trades", "", "| Metric | Value |", "|---|---|"]
+        out += [f"| {k} | {fmt(val)} |" for k, val in v.metrics.items()]
+        out += ["", "Deploy at the same position size relative to capital as max_notional_to_capital, or the "
+                    "drawdown and return figures above do not apply."]
     if v.limits:
         out += ["", "## Deployment limits", ""]
         out += [f"- {k}: {fmt(val)}" for k, val in v.limits.items() if k != "note"]
