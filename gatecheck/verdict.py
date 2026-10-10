@@ -104,7 +104,11 @@ def render_md(v: Verdict) -> str:
             measured = "; ".join(f"{_md(c['name'])}: {fmt(c['measured'])}" for c in g.checks)
             threshold = "; ".join(f"{c['comparator']} {fmt(c['threshold'])}" for c in g.checks)
         else:
-            measured, threshold = _md(g.reason), "—"
+            measured, threshold = "", "—"
+        if g.problems:
+            measured = "**" + _md("; ".join(g.problems)) + "**" + ("; " + measured if measured else "")
+        elif not g.checks:
+            measured = _md(g.reason)
         out.append(f"| {g.id} | {_md(g.name)} | {measured} | {threshold} | **{g.status}** |")
     failed = d["failed_gates_by_miss"]
     if failed:
