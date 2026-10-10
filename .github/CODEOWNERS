@@ -1,14 +1,14 @@
-# Replace @REPLACE-WITH-RISK-OWNER with the GitHub user or team that owns risk.
+# Owner of the gate. When a risk officer joins, add them here too.
 # Then enable branch protection on main: require PR review from code owners and
 # require the strategy-gate check. Without that, anyone with write access can
 # edit the gate itself, and no in-code rule can stop them.
 
-/gatecheck/              @REPLACE-WITH-RISK-OWNER
-/gate_check.py           @REPLACE-WITH-RISK-OWNER
-/deploy.py               @REPLACE-WITH-RISK-OWNER
-/deploy.sh               @REPLACE-WITH-RISK-OWNER
-/config/                 @REPLACE-WITH-RISK-OWNER
-/tests/                  @REPLACE-WITH-RISK-OWNER
-/ci/                     @REPLACE-WITH-RISK-OWNER
-/.github/                @REPLACE-WITH-RISK-OWNER
-/requirements.txt        @REPLACE-WITH-RISK-OWNER
+/gatecheck/              @soumik34343434434
+/gate_check.py           @soumik34343434434
+/deploy.py               @soumik34343434434
+/deploy.sh               @soumik34343434434
+/config/                 @soumik34343434434
+/tests/                  @soumik34343434434
+/ci/                     @soumik34343434434
+/.github/                @soumik34343434434
+/requirements.txt        @soumik34343434434
