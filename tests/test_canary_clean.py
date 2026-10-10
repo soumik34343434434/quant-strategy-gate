@@ -23,6 +23,12 @@ def test_recomputed_metrics_match_independent_reference(clean, check):
     assert v.metrics["n_trades"] == clean.expected["n_trades"]
 
 
+def test_position_size_is_measured_against_equity_at_entry(clean, check):
+    """The fixture sizes every trade at 10% of the equity before it. Compounding must not inflate this."""
+    v = check(clean.path)
+    assert v.metrics["max_position_to_equity"] == pytest.approx(clean.spec.notional_frac, rel=1e-6)
+
+
 def test_long_only_book_marks_neutral_gate_not_applicable(make, check):
     v = check(make(strategy_type="long_only", sides="long").path)
     assert status(v, 6) == "N/A", detail(v)

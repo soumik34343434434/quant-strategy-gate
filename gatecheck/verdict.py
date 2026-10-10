@@ -119,7 +119,7 @@ def render_md(v: Verdict) -> str:
     if v.metrics:
         out += ["", "## Recomputed from raw trades", "", "| Metric | Value |", "|---|---|"]
         out += [f"| {k} | {fmt(val)} |" for k, val in v.metrics.items()]
-        out += ["", "Deploy at the same position size relative to capital as max_notional_to_capital, or the "
+        out += ["", "Deploy at the same position size relative to equity as max_position_to_equity, or the "
                     "drawdown and return figures above do not apply."]
     if v.limits:
         out += ["", "## Deployment limits", ""]

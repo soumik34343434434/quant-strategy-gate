@@ -168,9 +168,16 @@ class Context:
             "n_trades": int(len(self.t)),
             "buy_and_hold": bh,
             # Informational, not a gate: drawdown and returns only mean anything at this sizing.
-            "max_notional_to_capital": float((self.t["size"] * self.t["entry_price"]
-                                              * self.m["contract_multiplier"]).max() / self.cap),
+            "max_position_to_equity": self.attempt(self._max_position_to_equity)[0],
         }
+
+    def _max_position_to_equity(self) -> float:
+        """Largest entry notional divided by the equity at the close before that entry."""
+        notional = (self.t["size"] * self.t["entry_price"] * self.m["contract_multiplier"]).to_numpy()
+        eq = self.equity_daily
+        pos = eq.index.searchsorted(pd.DatetimeIndex(self.t["entry_time"].dt.normalize()), side="left") - 1
+        before = np.where(pos >= 0, eq.to_numpy()[np.clip(pos, 0, None)], self.cap)
+        return float((notional / before).max())
 
     def cost_per_side(self) -> float:
         s = self.m["settings"]
