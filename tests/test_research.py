@@ -1,5 +1,6 @@
 """Research pipeline: no look-ahead, exact cost accounting, bundles the gate can read."""
 import importlib.util
+import json
 
 import numpy as np
 import pandas as pd
@@ -10,11 +11,24 @@ from tests.fixtures.helpers import ROOT, detail, status
 S, FEE = 0.0005, 0.001
 
 
-def load_strategy():
-    spec = importlib.util.spec_from_file_location("ma_trend", ROOT / "research/strategies/ma_trend/strategy.py")
+STRATEGY_NAMES = ["ma_trend", "dip_buy"]
+
+
+def load_strategy(name="ma_trend"):
+    spec = importlib.util.spec_from_file_location(name, ROOT / f"research/strategies/{name}/strategy.py")
     mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)
     return mod
+
+
+def params_of(name):
+    return json.loads((ROOT / f"research/strategies/{name}/params.json").read_text())
+
+
+def random_walk(n=900, seed=3, drift=0.0005, vol=0.03, start="2021-01-01"):
+    rng = np.random.default_rng(seed)
+    idx = pd.date_range(start, periods=n, freq="D", tz="UTC")
+    return pd.Series(20_000 * np.exp(np.cumsum(drift + vol * rng.standard_normal(n))), index=idx)
 
 
 def vbt_record(direction, size, entry_mid, exit_mid, s=S, fee=FEE, status="Closed"):
@@ -61,19 +75,47 @@ def test_open_trades_are_refused():
         to_canonical(pd.DataFrame([vbt_record("Long", 1.0, 100.0, 101.0, status="Open")]), slippage=S)
 
 
-def test_signals_never_use_future_prices():
+@pytest.mark.parametrize("name", STRATEGY_NAMES)
+def test_signals_never_use_future_prices(name):
     """Changing the close on day k must not change any signal on or before day k."""
-    strat = load_strategy()
-    rng = np.random.default_rng(0)
-    idx = pd.date_range("2020-01-01", periods=400, freq="D", tz="UTC")
-    close = pd.Series(100 * np.exp(np.cumsum(0.02 * rng.standard_normal(400))), index=idx)
-    e1, x1 = strat.signals(close, 20, 100)
+    strat, params = load_strategy(name), params_of(name)
+    close = random_walk(400, seed=0, vol=0.02, start="2020-01-01")
+    e1, x1 = strat.signals(close, **params)
     for k in (120, 250, 399):
         bumped = close.copy()
-        bumped.iloc[k] *= 1.5
-        e2, x2 = strat.signals(bumped, 20, 100)
+        bumped.iloc[k] *= 1.5 if k != 250 else 0.6
+        e2, x2 = strat.signals(bumped, **params)
         assert e1.iloc[: k + 1].equals(e2.iloc[: k + 1]), k
         assert x1.iloc[: k + 1].equals(x2.iloc[: k + 1]), k
+
+
+def test_dip_buy_only_buys_dips_in_an_uptrend():
+    strat, p = load_strategy("dip_buy"), params_of("dip_buy")
+    close = random_walk(1500, seed=5)
+    entries, exits = strat.signals(close, **p)
+    assert entries.sum() > 10, "fixture should produce entries"
+    # an entry on bar t+1 comes from the close of bar t
+    prev = close.shift(1)
+    trend = close.rolling(p["trend_ma"]).mean().shift(1)
+    drop = (close / close.shift(p["drop_days"]) - 1).shift(1)
+    assert (prev[entries] > trend[entries]).all()
+    assert (drop[entries] < -p["drop_pct"]).all()
+    assert not (entries & exits).any()
+
+
+@pytest.mark.parametrize("bad", [{"trend_ma": 0}, {"drop_days": 0}, {"drop_pct": -0.01}, {"exit_ma": 2.5},
+                                 {"drop_pct": True}])
+def test_dip_buy_rejects_invalid_params(bad):
+    strat, p = load_strategy("dip_buy"), params_of("dip_buy")
+    with pytest.raises(ValueError):
+        strat.signals(random_walk(300), **{**p, **bad})
+
+
+def test_every_strategy_declares_a_step_for_each_param():
+    from research.run_strategy import STRATEGIES
+    assert set(STRATEGIES) == set(STRATEGY_NAMES)
+    for name, spec in STRATEGIES.items():
+        assert set(spec["steps"]) == set(params_of(name)), name
 
 
 def test_trials_log_counts_distinct_parameter_sets(tmp_path):
@@ -85,16 +127,15 @@ def test_trials_log_counts_distinct_parameter_sets(tmp_path):
     assert count_trials(log, "ma_trend") == 2
 
 
-def test_runner_bundle_is_readable_by_the_gate(tmp_path, test_config):
+@pytest.mark.parametrize("name", STRATEGY_NAMES)
+def test_runner_bundle_is_readable_by_the_gate(name, tmp_path, test_config):
     pytest.importorskip("vectorbt")
     from gatecheck.runner import run_check
-    from research.run_ma_trend import build_bundle
+    from research.run_strategy import build_bundle
 
-    rng = np.random.default_rng(3)
-    idx = pd.date_range("2021-01-01", periods=900, freq="D", tz="UTC")
-    close = pd.Series(20_000 * np.exp(np.cumsum(0.0005 + 0.03 * rng.standard_normal(900))), index=idx)
+    close = random_walk()
     ohlc = pd.DataFrame({"open": close.shift(1).fillna(close.iloc[0]), "close": close})
-    bundle = build_bundle(ohlc, tmp_path / "bundle", builder_id="test-builder", n_trials=5)
+    bundle = build_bundle(name, ohlc, tmp_path / "bundle", builder_id="test-builder", n_trials=5)
     v = run_check(bundle, test_config)
     assert status(v, 0) == "PASS", detail(v)  # schema, reconciliation, honest summary
     assert status(v, 1) == "PASS", detail(v)  # costs declared and actually charged

@@ -43,6 +43,26 @@ paper/paper_manifest.json  paper/paper_trades.csv  paper/shadow_trades.csv
 
 `strategy_version` is `python strategy_hash.py <strategy_dir>`: a sha256 over every file in the strategy source, params included.
 
+## Research pipeline (BTC-USD)
+
+`research/` turns a strategy idea into a report bundle, using vectorbt and Coinbase daily prices:
+
+```bash
+.venv/bin/pip install -r requirements-research.txt
+.venv/bin/python research/fetch_btc.py
+.venv/bin/python research/run_strategy.py dip_buy
+.venv/bin/python -I gate_check.py research/output/dip_buy/<strategy_version>
+```
+
+- Strategies live in `research/strategies/<name>/` (`strategy.py` + `params.json`). Their plateau steps are in `research/run_strategy.py`.
+- Every parameter set ever run is appended to `research/trials.jsonl`, and its count is the `n_trials` that gate 12 penalizes. Tuning until the gate passes makes gate 12 stricter.
+- The pipeline never writes `risk_review.md` or `paper/`. Those must come from someone else and from a real forward period.
+
+| Strategy | Verdict | Biggest misses |
+|---|---|---|
+| `ma_trend`, SMA 20/100 trend | BLOCKED | 70% drawdown, Sharpe 0.42, 19 trades, trailing 12 months negative |
+| `dip_buy`, buy 6%/3-day dips above the 200-day average | BLOCKED | loses to buy & hold, fragile parameters (plateau 19%), 34% drawdown, 75 trades |
+
 ## Scorecard (config v1)
 
 | # | Gate | Passes when |

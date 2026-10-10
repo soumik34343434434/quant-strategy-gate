@@ -4,3 +4,12 @@
 {"at": "2026-10-10T12:53:25Z", "params": {"fast": 20, "slow": 100}, "strategy": "btc-ma-trend"}
 {"at": "2026-10-10T12:53:25Z", "params": {"fast": 20, "slow": 80}, "strategy": "btc-ma-trend"}
 {"at": "2026-10-10T12:53:25Z", "params": {"fast": 20, "slow": 120}, "strategy": "btc-ma-trend"}
+{"at": "2026-10-10T14:54:07Z", "params": {"drop_days": 3, "drop_pct": 0.06, "exit_ma": 5, "trend_ma": 200}, "strategy": "btc-dip-buy"}
+{"at": "2026-10-10T14:54:07Z", "params": {"drop_days": 3, "drop_pct": 0.06, "exit_ma": 5, "trend_ma": 150}, "strategy": "btc-dip-buy"}
+{"at": "2026-10-10T14:54:07Z", "params": {"drop_days": 3, "drop_pct": 0.06, "exit_ma": 5, "trend_ma": 250}, "strategy": "btc-dip-buy"}
+{"at": "2026-10-10T14:54:07Z", "params": {"drop_days": 2, "drop_pct": 0.06, "exit_ma": 5, "trend_ma": 200}, "strategy": "btc-dip-buy"}
+{"at": "2026-10-10T14:54:07Z", "params": {"drop_days": 4, "drop_pct": 0.06, "exit_ma": 5, "trend_ma": 200}, "strategy": "btc-dip-buy"}
+{"at": "2026-10-10T14:54:07Z", "params": {"drop_days": 3, "drop_pct": 0.039999999999999994, "exit_ma": 5, "trend_ma": 200}, "strategy": "btc-dip-buy"}
+{"at": "2026-10-10T14:54:07Z", "params": {"drop_days": 3, "drop_pct": 0.08, "exit_ma": 5, "trend_ma": 200}, "strategy": "btc-dip-buy"}
+{"at": "2026-10-10T14:54:07Z", "params": {"drop_days": 3, "drop_pct": 0.06, "exit_ma": 3, "trend_ma": 200}, "strategy": "btc-dip-buy"}
+{"at": "2026-10-10T14:54:07Z", "params": {"drop_days": 3, "drop_pct": 0.06, "exit_ma": 7, "trend_ma": 200}, "strategy": "btc-dip-buy"}
