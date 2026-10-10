@@ -1,0 +1,2 @@
+# Optional: only for explain.py (advisory text). The gate never needs this.
+anthropic

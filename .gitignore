@@ -1,0 +1,7 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+verdicts/
+deployments.json
+.DS_Store

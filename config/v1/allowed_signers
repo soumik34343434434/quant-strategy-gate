@@ -1,0 +1,4 @@
+# Risk-officer public keys (ssh-keygen allowed_signers format), one per line:
+#   <reviewer_id> namespaces="strategy-gate-review" ssh-ed25519 AAAA...
+# Empty on purpose: until a reviewer is registered via new_config_version.py,
+# every report fails gate 7. Builders must never be listed here.
