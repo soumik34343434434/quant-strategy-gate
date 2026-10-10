@@ -1,0 +1,6 @@
+{
+  "trend_ma": 200,
+  "drop_days": 3,
+  "drop_pct": 0.06,
+  "exit_ma": 5
+}
