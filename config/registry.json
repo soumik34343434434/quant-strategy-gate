@@ -1,0 +1,17 @@
+{
+  "schema": "strategy-gate-registry/1",
+  "entries": [
+    {
+      "version": "v1",
+      "date": "2026-10-10",
+      "files": {
+        "gates.json": "0979d001b6628cba234125469c5bf643045d4c1eeb33a972768e42bcda57afb1",
+        "allowed_signers": "5fe65b4c1433a38e8fde8c89161958b79756bb0eaeb2aa43529d20a56ca8139c"
+      },
+      "changes": [],
+      "reason": "Initial thresholds per SPEC v1 (approved 2026-10-10). No reviewers registered yet: gate 7 blocks until one is added.",
+      "prev_entry_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+      "entry_sha256": "cc2b2bbb806c87bedab2463f8c3efff7fbd779cd75beae1605da48b2bbf89cc5"
+    }
+  ]
+}
