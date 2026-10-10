@@ -33,6 +33,8 @@ def copy_project(dest: Path, config_dir: Path) -> Path:
         shutil.copy2(ROOT / name, dest / name)
     shutil.copytree(ROOT / "gatecheck", dest / "gatecheck", ignore=shutil.ignore_patterns("__pycache__"))
     shutil.copytree(config_dir, dest / "config")
+    if (ROOT / ".venv").is_dir():
+        (dest / ".venv").symlink_to(ROOT / ".venv")  # deploy.sh prefers the project venv
     return dest
 
 

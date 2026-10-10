@@ -33,10 +33,11 @@ def test_prompt_contains_only_the_gate_table(project, make):
     assert "untrusted" in prompt.lower()
 
 
-def test_without_api_key_it_skips_and_touches_nothing(project, make):
+def test_without_credentials_it_skips_and_touches_nothing(project, make, tmp_path):
     vf = verdict_file(project, make)
     before = hashlib.sha256(vf.read_bytes()).hexdigest()
-    r = run([PY, project / "explain.py", vf], env=clean_env())
+    # Empty HOME: no API key and no `ant auth login` profile, so no network call can authenticate.
+    r = run([PY, project / "explain.py", vf], env=clean_env(HOME=str(tmp_path)))
     assert r.returncode == 0
     assert "skipped" in (r.stdout + r.stderr).lower()
     assert hashlib.sha256(vf.read_bytes()).hexdigest() == before
